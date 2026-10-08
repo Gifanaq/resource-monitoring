@@ -4,7 +4,7 @@ install:
 	poetry install
 
 run:
-	poetry run uvicorn tpumon.main:app --reload
+	poetry run uvicorn src.main:app --reload
 
 test:
 	poetry run pytest

@@ -1,0 +1,11 @@
+services:
+  db:
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+
+  api:
+    command: ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--log-level", "debug"]
+    environment:
+      TPUMON_APP_ENV: dev
+    volumes:
+      - ./src:/app/src

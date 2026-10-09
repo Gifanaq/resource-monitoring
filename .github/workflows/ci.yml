@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: pipx install poetry
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: poetry
+      - run: poetry install
+      - run: poetry run ruff check .
+      - run: poetry run ruff format --check .
+      - run: poetry run mypy src tests
+
+  tests:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: pipx install poetry
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: poetry
+      - run: poetry install
+      - run: poetry run pytest

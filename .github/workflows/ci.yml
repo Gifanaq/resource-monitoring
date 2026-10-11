@@ -32,3 +32,10 @@ jobs:
           cache: poetry
       - run: poetry install
       - run: poetry run pytest
+
+  docker:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: docker build .

@@ -1,5 +1,11 @@
+from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine import URL
+
+
+class MonitoredService(BaseModel):
+    name: str
+    url: str
 
 
 class Settings(BaseSettings):
@@ -12,6 +18,8 @@ class Settings(BaseSettings):
     db_name: str
     db_host: str
     db_port: int
+    check_interval_sec: int = 60
+    services: list[MonitoredService] = []
 
     @property
     def database_url(self) -> str:

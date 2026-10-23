@@ -1,0 +1,13 @@
+from typing import Protocol
+
+from src.domain.entities.service import CheckResult, Service, ServiceStatus
+
+
+class ServiceRepository(Protocol):
+    async def list_services(self) -> list[Service]: ...
+
+    async def get_status(self, service_id: int) -> ServiceStatus: ...
+
+    async def save_status(self, status: ServiceStatus) -> None: ...
+
+    async def add_result(self, result: CheckResult) -> None: ...

@@ -1,6 +1,6 @@
 import asyncio
 from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 
 import httpx
 from fastapi import FastAPI
@@ -27,8 +27,12 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
                 app.state.monitoring.check_all, settings.check_interval_sec
             )
         )
-        yield
-        task.cancel()
+        try:
+            yield
+        finally:
+            task.cancel()
+            with suppress(asyncio.CancelledError):
+                await task
 
 
 def create_app() -> FastAPI:

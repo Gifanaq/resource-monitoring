@@ -21,6 +21,10 @@ class Service:
     failure_threshold: int = 3
     recovery_threshold: int = 2
 
+    def __post_init__(self) -> None:
+        if self.failure_threshold < 1 or self.recovery_threshold < 1:
+            raise ValueError("status thresholds must be positive")
+
 
 @dataclass(frozen=True, slots=True)
 class CheckResult:
@@ -39,3 +43,4 @@ class ServiceStatus:
     consecutive_failures: int = 0
     consecutive_successes: int = 0
     changed_at: datetime | None = None
+    last_checked_at: datetime | None = None

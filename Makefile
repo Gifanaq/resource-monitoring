@@ -1,4 +1,4 @@
-.PHONY: install run test lint fix-lint format typecheck up down dev logs
+.PHONY: install run test lint fix-lint format typecheck prod down dev logs
 
 install:
 	poetry install
@@ -21,7 +21,7 @@ format:
 typecheck:
 	poetry run mypy src
 
-up:
+prod:
 	docker compose up -d --build
 
 down:

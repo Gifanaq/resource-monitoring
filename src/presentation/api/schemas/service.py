@@ -11,3 +11,4 @@ class ServiceStatusOut(BaseModel):
     url: str
     status: StatusLevel
     changed_at: datetime | None
+    last_checked_at: datetime | None

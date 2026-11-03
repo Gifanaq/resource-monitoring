@@ -9,7 +9,7 @@ router = APIRouter(tags=["services"])
 
 
 def get_monitoring(request: Request) -> MonitoringService:
-    return cast(MonitoringService, request.app.state.monitoring)
+    return cast("MonitoringService", request.app.state.monitoring)
 
 
 @router.get("/services")
@@ -23,6 +23,7 @@ async def list_services(
             url=service.url,
             status=status.level,
             changed_at=status.changed_at,
+            last_checked_at=status.last_checked_at,
         )
         for service, status in await monitoring.list_statuses()
     ]

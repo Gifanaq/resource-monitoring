@@ -20,3 +20,9 @@ jobs:
       - run: poetry run ruff format --check .
       - run: make typecheck
       - run: make test
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: docker build .

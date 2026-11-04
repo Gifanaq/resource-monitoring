@@ -12,6 +12,7 @@ dependencies = [
     "sqlalchemy>=2.0",
     "alembic>=1.14",
     "psycopg[binary]>=3.2",
+    "httpx>=0.28",
 ]
 
 [tool.poetry]
@@ -19,7 +20,6 @@ package-mode = false
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=8.3"
-httpx = ">=0.28"
 ruff = ">=0.16"
 mypy = ">=2.4"
 

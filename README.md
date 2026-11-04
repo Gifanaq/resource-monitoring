@@ -14,7 +14,7 @@
 cp .env.example .env
 ```
 
-Перед запуском измените `DB_PASSWORD` в `.env`. При необходимости настройте `API_PORT` и список `SERVICES`.
+Добавьте в `.env` переменную `SERVICES` как JSON-массив объектов с полями `name` и `url`. При необходимости укажите `API_PORT`.
 
 ```sh
 make prod
@@ -41,4 +41,4 @@ make install
 make run
 ```
 
-В этом режиме PostgreSQL должен быть доступен по `DB_HOST` и `DB_PORT` из `.env`.
+Для проверки HTTP-сервисов без Docker достаточно настроить `SERVICES` в `.env`.

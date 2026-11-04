@@ -8,14 +8,6 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    env:
-      APP_NAME: tpumon
-      APP_ENV: test
-      DB_USER: tpumon_user
-      DB_PASSWORD: changeme
-      DB_NAME: tpumon
-      DB_HOST: localhost
-      DB_PORT: "5432"
     steps:
       - uses: actions/checkout@v5
       - run: pipx install poetry

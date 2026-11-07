@@ -21,6 +21,8 @@ RUN useradd --create-home --uid 1000 app
 WORKDIR /app
 COPY --from=builder /app/.venv ./.venv
 COPY --from=builder /app/src ./src
+COPY alembic.ini ./alembic.ini
+COPY migrations ./migrations
 USER app
 
 EXPOSE 8000

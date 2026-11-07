@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -21,6 +21,16 @@ class Settings(BaseSettings):
     app_env: str = "dev"
     check_interval_sec: Annotated[int, Field(ge=60)] = 60
     services: list[MonitoredService] = []
+
+
+class DatabaseSettings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    postgres_user: str = Field(min_length=1)
+    postgres_password: SecretStr
+    postgres_db: str = Field(min_length=1)
+    postgres_host: str = "localhost"
+    postgres_port: int = Field(default=5432, ge=1, le=65535)
 
 
 settings = Settings()

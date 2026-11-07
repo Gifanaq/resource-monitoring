@@ -9,6 +9,7 @@ class InMemoryServiceRepository:
         self._services = {s.id: s for s in services}
         self._statuses: dict[int, ServiceStatus] = {}
         self._results: deque[CheckResult] = deque(maxlen=10_000)
+        self._last_results: dict[int, CheckResult] = {}
 
     async def list_services(self) -> list[Service]:
         return list(self._services.values())
@@ -21,3 +22,7 @@ class InMemoryServiceRepository:
 
     async def add_result(self, result: CheckResult) -> None:
         self._results.append(result)
+        self._last_results[result.service_id] = result
+
+    async def get_last_result(self, service_id: int) -> CheckResult | None:
+        return self._last_results.get(service_id)

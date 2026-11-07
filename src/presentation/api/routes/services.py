@@ -3,6 +3,7 @@ from typing import Annotated, cast
 from fastapi import APIRouter, Depends, Request
 
 from src.application.services.monitoring import MonitoringService
+from src.domain.entities.tls import TlsResult
 from src.presentation.api.schemas.service import ServiceStatusOut
 
 router = APIRouter(tags=["services"])
@@ -24,6 +25,10 @@ async def list_services(
             status=status.level,
             changed_at=status.changed_at,
             last_checked_at=status.last_checked_at,
+            status_code=result.status_code if result else None,
+            response_time_ms=result.response_time_ms if result else None,
+            error=result.error if result else None,
+            tls=result.tls if result else TlsResult(),
         )
-        for service, status in await monitoring.list_statuses()
+        for service, status, result in await monitoring.list_statuses()
     ]

@@ -4,6 +4,7 @@ from datetime import UTC, datetime
 from src.application.services.monitoring import MonitoringService
 from src.domain.entities.service import CheckResult, Service, StatusLevel
 from src.infrastructure.adapters.memory_repository import InMemoryServiceRepository
+from tests.fixtures.checkers import StaticTlsChecker
 
 
 class IntermittentChecker:
@@ -21,7 +22,9 @@ class IntermittentChecker:
 def test_one_checker_exception_does_not_interrupt_other_services() -> None:
     services = [Service(1, "bad", "bad-url"), Service(2, "ok", "https://tpu.ru")]
     repository = InMemoryServiceRepository(services)
-    monitoring = MonitoringService(repository, IntermittentChecker())
+    monitoring = MonitoringService(
+        repository, IntermittentChecker(), StaticTlsChecker()
+    )
 
     statuses = asyncio.run(monitoring.check_all())
 

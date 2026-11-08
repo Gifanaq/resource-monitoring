@@ -81,12 +81,4 @@ class MonitoringService:
     async def list_statuses(
         self,
     ) -> list[tuple[Service, ServiceStatus, CheckResult | None]]:
-        services = await self._repository.list_services()
-        return [
-            (
-                service,
-                await self._repository.get_status(service.id),
-                await self._repository.get_last_result(service.id),
-            )
-            for service in services
-        ]
+        return await self._repository.list_statuses()

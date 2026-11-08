@@ -14,6 +14,18 @@ class InMemoryServiceRepository:
     async def list_services(self) -> list[Service]:
         return list(self._services.values())
 
+    async def list_statuses(
+        self,
+    ) -> list[tuple[Service, ServiceStatus, CheckResult | None]]:
+        return [
+            (
+                service,
+                self._statuses.get(service.id, ServiceStatus(service.id)),
+                self._last_results.get(service.id),
+            )
+            for service in self._services.values()
+        ]
+
     async def get_status(self, service_id: int) -> ServiceStatus:
         return self._statuses.get(service_id, ServiceStatus(service_id))
 

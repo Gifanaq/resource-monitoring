@@ -1,13 +1,11 @@
 import asyncio
-import logging
 from datetime import UTC, datetime
 
 from src.application.services.status_calculator import next_status
+from src.core.logging import logger
 from src.domain.entities.service import CheckResult, Service, ServiceStatus
 from src.domain.interfaces.checker import Checker
 from src.domain.interfaces.service_repository import ServiceRepository
-
-logger = logging.getLogger(__name__)
 
 
 class MonitoringService:

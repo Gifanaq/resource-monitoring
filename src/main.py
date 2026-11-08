@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from src.application.services.monitoring import MonitoringService
 from src.application.services.scheduler import run_periodically
 from src.core.config import settings
+from src.core.logging import setup_logging
 from src.domain.entities.service import Service
 from src.infrastructure.adapters.http_checker import HttpChecker
 from src.infrastructure.adapters.memory_repository import InMemoryServiceRepository
@@ -16,6 +17,7 @@ from src.presentation.api.routes import health, services
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    setup_logging()
     async with httpx.AsyncClient(follow_redirects=True) as client:
         repository = InMemoryServiceRepository(
             Service(id=index, name=item.name, url=item.url)

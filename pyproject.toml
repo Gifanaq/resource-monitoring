@@ -44,6 +44,7 @@ indent-width = 4
 src = ["src", "tests"]
 
 [tool.ruff.lint]
+logger-objects = ["src.core.logging.logger"]
 select = ["ALL"]
 ignore = ["COM812", "ISC001", "B008", "D", "CPY001", "TRY003", "EM101"]
 

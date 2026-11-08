@@ -1,8 +1,7 @@
 import asyncio
-import logging
 from collections.abc import Awaitable, Callable
 
-logger = logging.getLogger(__name__)
+from src.core.logging import logger
 
 
 async def run_periodically(

@@ -1,6 +1,8 @@
 import asyncio
+import ssl
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager, suppress
+from functools import partial
 
 import httpx
 from fastapi import FastAPI
@@ -12,6 +14,7 @@ from src.core.logging import setup_logging
 from src.domain.entities.service import Service
 from src.infrastructure.adapters.http_checker import HttpChecker
 from src.infrastructure.adapters.memory_repository import InMemoryServiceRepository
+from src.infrastructure.adapters.tls_checker import TlsCertificateChecker
 from src.presentation.api.routes import health, services
 
 
@@ -19,22 +22,43 @@ from src.presentation.api.routes import health, services
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     setup_logging()
     async with httpx.AsyncClient(follow_redirects=True) as client:
-        repository = InMemoryServiceRepository(
-            Service(id=index, name=item.name, url=item.url)
-            for index, item in enumerate(settings.services, start=1)
-        )
-        app.state.monitoring = MonitoringService(repository, HttpChecker(client))
-        task = asyncio.create_task(
-            run_periodically(
-                app.state.monitoring.check_all, settings.check_interval_sec
+        monitored_services = [
+            Service(
+                id=index,
+                name=item.name,
+                url=str(item.url),
+                expected_status=item.expected_status,
+                follow_redirects=item.follow_redirects,
+                timeout_sec=item.timeout_sec,
+                slow_response_ms=item.slow_response_ms,
+                tls_warn_before_days=item.tls_warn_before_days,
             )
+            for index, item in enumerate(settings.services, start=1)
+        ]
+        repository = InMemoryServiceRepository(monitored_services)
+        monitoring = MonitoringService(
+            repository,
+            HttpChecker(client),
+            TlsCertificateChecker(ssl.create_default_context()),
         )
+        app.state.monitoring = monitoring
+        tasks = [
+            asyncio.create_task(
+                run_periodically(
+                    partial(monitoring.check_service, service),
+                    settings.check_interval_sec,
+                )
+            )
+            for service in monitored_services
+        ]
         try:
             yield
         finally:
-            task.cancel()
-            with suppress(asyncio.CancelledError):
-                await task
+            for task in tasks:
+                task.cancel()
+            for task in tasks:
+                with suppress(asyncio.CancelledError):
+                    await task
 
 
 def create_app() -> FastAPI:

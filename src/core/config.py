@@ -1,12 +1,17 @@
 from typing import Annotated
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, HttpUrl, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class MonitoredService(BaseModel):
-    name: str
-    url: str
+    name: str = Field(min_length=1)
+    url: HttpUrl
+    expected_status: int = Field(default=200, ge=100, le=599)
+    follow_redirects: bool = True
+    timeout_sec: float = Field(default=10.0, gt=0, allow_inf_nan=False)
+    slow_response_ms: int = Field(default=2000, gt=0)
+    tls_warn_before_days: int = Field(default=14, gt=0, strict=True)
 
 
 class Settings(BaseSettings):
@@ -16,6 +21,16 @@ class Settings(BaseSettings):
     app_env: str = "dev"
     check_interval_sec: Annotated[int, Field(ge=60)] = 60
     services: list[MonitoredService] = []
+
+
+class DatabaseSettings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    postgres_user: str = Field(min_length=1)
+    postgres_password: SecretStr
+    postgres_db: str = Field(min_length=1)
+    postgres_host: str = "localhost"
+    postgres_port: int = Field(default=5432, ge=1, le=65535)
 
 
 settings = Settings()

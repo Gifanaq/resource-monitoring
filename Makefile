@@ -1,4 +1,4 @@
-.PHONY: install run test
+.PHONY: install run test lint fix-lint format typecheck
 
 install:
 	poetry install
@@ -8,3 +8,15 @@ run:
 
 test:
 	poetry run pytest
+
+lint:
+	poetry run ruff check .
+
+fix-lint:
+	poetry run ruff check --fix .
+
+format:
+	poetry run ruff format .
+
+typecheck:
+	poetry run mypy src

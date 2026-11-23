@@ -80,31 +80,6 @@ make logs
 make down
 ```
 
-## Публикация API через Nginx
-
-Используйте Docker Compose 2.24.4 или новее. В серверном варианте Compose публикует порт Nginx, а API доступен внутри сети проекта. По умолчанию прокси слушает `127.0.0.1:80`. Для локальной проверки можно задать `TPUMON_HTTP_PORT=18080`.
-
-Для выкладки на сервере нужен свободный TCP-порт 80 и внешний адрес, по которому трафик поступает на этот сервер. Перед открытием доступа проверьте, что URL ресурсов и остальные поля `/services` можно показать тестирующим. Этот вариант обслуживает HTTP.
-
-Запускайте команды на сервере из каталога проверенной ревизии репозитория. Подставьте имя действующего Compose-проекта и путь к рабочему `.env`. Если Docker доступен через `sudo`, запускайте Compose через `sudo env TPUMON_HTTP_BIND=0.0.0.0 docker compose …`.
-
-```sh
-compose_public() {
-  TPUMON_HTTP_BIND=0.0.0.0 docker compose -p tpumon-demo \
-    --env-file /path/to/tpumon.env \
-    -f docker-compose.yml -f docker-compose.public.yml "$@"
-}
-
-compose_public config --quiet &&
-compose_public pull proxy &&
-compose_public run --rm --no-deps proxy nginx -t &&
-compose_public up -d --build --wait
-```
-
-Выполните `compose_public ps` и проверьте, что порт 80 опубликован у `proxy`. Снаружи проверьте `/health`, `/services`, `/docs` и `/openapi.json`. В Swagger выполните `GET /services`. Команда `compose_public stop proxy` закрывает внешний доступ.
-
-Перед обновлением сохраните предыдущую конфигурацию и тег образа API. Для отката остановите прокси и из каталога предыдущей версии запустите прежний Compose с сохранённым образом, тем же именем проекта и рабочим файлом окружения. Проверьте `/health` по адресу предыдущего развёртывания.
-
 ## Разработка через Docker
 
 Запуск с монтированием `src/`, автоматической перезагрузкой кода и debug-логами Uvicorn:
